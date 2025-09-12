@@ -1,0 +1,12 @@
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.GeneratedMSBuildEditorConfig.editorconfig
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.AssemblyInfoInputs.cache
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.AssemblyInfo.cs
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.csproj.CoreCompileInputs.cache
+D:\Test case\StudentPlatform.Core\bin\Debug\net9.0\StudentPlatform.Core.deps.json
+D:\Test case\StudentPlatform.Core\bin\Debug\net9.0\StudentPlatform.Core.dll
+D:\Test case\StudentPlatform.Core\bin\Debug\net9.0\StudentPlatform.Core.pdb
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.dll
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\refint\StudentPlatform.Core.dll
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.pdb
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\ref\StudentPlatform.Core.dll
+D:\Test case\StudentPlatform.Core\obj\Debug\net9.0\StudentPlatform.Core.sourcelink.json
