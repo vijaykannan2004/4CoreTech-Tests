@@ -1,0 +1,49 @@
+{
+	"id": "student-platform-env",
+	"name": "Student Platform Environment",
+	"values": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:5001",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "user_id",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "business_id",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "review_id",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "notification_id",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "target_user_id",
+			"value": "2",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment"
+}

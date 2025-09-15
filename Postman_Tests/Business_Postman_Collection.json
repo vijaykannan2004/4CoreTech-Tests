@@ -1,0 +1,235 @@
+{
+	"info": {
+		"_postman_id": "business-management-tests",
+		"name": "Business Management API Tests",
+		"description": "API tests for business management functionality",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create Business - Valid",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"businessName\": \"ShopX\",\n  \"businessType\": 2,\n  \"city\": \"New York\",\n  \"postalCode\": \"10001\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/business/create",
+					"host": ["{{base_url}}"],
+					"path": ["api", "business", "create"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Response has business ID', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.be.above(0);",
+							"});",
+							"",
+							"pm.test('Business name is preserved', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.businessName).to.eql('ShopX');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Business - Missing Name",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"businessName\": \"\",\n  \"businessType\": 2,\n  \"city\": \"New York\",\n  \"postalCode\": \"10001\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/business/create",
+					"host": ["{{base_url}}"],
+					"path": ["api", "business", "create"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates missing business name', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('Business name');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Business - Missing Category",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"businessName\": \"ShopX\",\n  \"businessType\": 0,\n  \"city\": \"New York\",\n  \"postalCode\": \"10001\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/business/create",
+					"host": ["{{base_url}}"],
+					"path": ["api", "business", "create"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates missing business category', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('Business category');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Create Business - Missing Location",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"businessName\": \"ShopX\",\n  \"businessType\": 2,\n  \"city\": \"\",\n  \"postalCode\": \"\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/business/create",
+					"host": ["{{base_url}}"],
+					"path": ["api", "business", "create"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates missing location', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('location');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get Business by ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/business/{{business_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "business", "{{business_id}}"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has business data', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.be.above(0);",
+							"    pm.expect(jsonData.businessName).to.not.be.empty;",
+							"});"
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "business_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

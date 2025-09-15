@@ -1,0 +1,257 @@
+{
+	"info": {
+		"_postman_id": "notification-management-tests",
+		"name": "Notification Management API Tests",
+		"description": "API tests for notification functionality",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Send Notification",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"content\": \"New Msg\",\n  \"recipientId\": 1,\n  \"type\": \"message\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/notification/send",
+					"host": ["{{base_url}}"],
+					"path": ["api", "notification", "send"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 201', function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"pm.test('Response has notification ID', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.id).to.be.above(0);",
+							"});",
+							"",
+							"pm.test('Notification is marked as unread', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isRead).to.be.false;",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Mark Notification as Read",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"isRead\": true\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/notification/{{notification_id}}/read",
+					"host": ["{{base_url}}"],
+					"path": ["api", "notification", "{{notification_id}}", "read"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Notification is marked as read', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.isRead).to.be.true;",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Delete Notification",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/notification/{{notification_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "notification", "{{notification_id}}"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 204', function () {",
+							"    pm.response.to.have.status(204);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get Unread Count",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/notification/unread-count",
+					"host": ["{{base_url}}"],
+					"path": ["api", "notification", "unread-count"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response has unread count', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.unreadCount).to.be.a('number');",
+							"    pm.expect(jsonData.unreadCount).to.be.at.least(0);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Get All Notifications",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/notification",
+					"host": ["{{base_url}}"],
+					"path": ["api", "notification"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response is an array', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"});",
+							"",
+							"pm.test('Each notification has required fields', function () {",
+							"    var jsonData = pm.response.json();",
+							"    jsonData.forEach(function(notification) {",
+							"        pm.expect(notification).to.have.property('id');",
+							"        pm.expect(notification).to.have.property('content');",
+							"        pm.expect(notification).to.have.property('isRead');",
+							"    });",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Cleanup Expired Notifications",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/notification/cleanup-expired",
+					"host": ["{{base_url}}"],
+					"path": ["api", "notification", "cleanup-expired"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates cleanup success', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('cleanup');",
+							"});"
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "notification_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

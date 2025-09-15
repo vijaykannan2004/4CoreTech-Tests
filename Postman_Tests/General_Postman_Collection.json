@@ -1,0 +1,373 @@
+{
+	"info": {
+		"_postman_id": "general-platform-tests",
+		"name": "General Platform API Tests",
+		"description": "API tests for general platform functionality",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Follow User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"targetUserId\": 2\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/follow",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "follow"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates successful follow', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Unfollow User",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/user/unfollow/{{target_user_id}}",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "unfollow", "{{target_user_id}}"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates successful unfollow', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Block User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"targetUserId\": 3\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/block",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "block"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response indicates successful block', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "API Call Without Token",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/user/profile",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "profile"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 401', function () {",
+							"    pm.response.to.have.status(401);",
+							"});",
+							"",
+							"pm.test('Response indicates missing authentication', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('unauthorized');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "SQL Injection Prevention Test",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/search?query=%27%3B%20DROP%20TABLE%20Users%3B%20--",
+					"host": ["{{base_url}}"],
+					"path": ["api", "search"],
+					"query": [
+						{
+							"key": "query",
+							"value": "'; DROP TABLE Users; --"
+						}
+					]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('SQL injection attempt is handled safely', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.not.include('DROP TABLE');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Performance Test - Response Time",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/user/profile",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "profile"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('Response time is under 2 seconds', function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Concurrency Test - Update Profile",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"firstName\": \"Updated Name\",\n  \"version\": 1\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/profile",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "profile"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 200', function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test('No concurrency conflicts', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.success).to.be.true;",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Database Constraint Test - Duplicate Prevention",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"duplicate@test.com\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/user/duplicate-test",
+					"host": ["{{base_url}}"],
+					"path": ["api", "user", "duplicate-test"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 409', function () {",
+							"    pm.response.to.have.status(409);",
+							"});",
+							"",
+							"pm.test('Response indicates duplicate constraint', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('duplicate');",
+							"});"
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Null Input Handling Test",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{auth_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"input\": null\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/test/null-input",
+					"host": ["{{base_url}}"],
+					"path": ["api", "test", "null-input"]
+				}
+			},
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Status code is 400', function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"",
+							"pm.test('Response indicates null input error', function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.include('null');",
+							"});"
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:5001",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "target_user_id",
+			"value": "2",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,322 @@
+{
+	"info": {
+		"_postman_id": "student-platform-api-tests",
+		"name": "Student Platform API Tests",
+		"description": "Comprehensive API test collection based on unit tests for Student Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Account Management",
+			"item": [
+				{
+					"name": "Create Account - Valid",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@student.com\",\n  \"password\": \"StrongP@ss123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "create"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success true', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response message is correct', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Account created');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Create Account - Duplicate Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"duplicate@student.com\",\n  \"password\": \"StrongP@ss123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "create"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Response has success false', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});",
+									"",
+									"pm.test('Response message indicates duplicate email', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Email already exists');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Create Account - Weak Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@student.com\",\n  \"password\": \"12345\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/create",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "create"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Response has success false', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});",
+									"",
+									"pm.test('Response message indicates weak password', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Weak password');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Login - Valid Credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@student.com\",\n  \"password\": \"CorrectP@ss123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "login"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has success true', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test('Response message indicates successful login', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Login successful');",
+									"});",
+									"",
+									"pm.test('Response time is less than 2000ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Login - Invalid Credentials",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@student.com\",\n  \"password\": \"WrongPassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "login"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test('Response has success false', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});",
+									"",
+									"pm.test('Response message indicates invalid credentials', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Invalid credentials');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Login - Account Locked",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"locked@student.com\",\n  \"password\": \"AnyPassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/login",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "login"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 423', function () {",
+									"    pm.response.to.have.status(423);",
+									"});",
+									"",
+									"pm.test('Response has success false', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});",
+									"",
+									"pm.test('Response message indicates account locked', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Account locked');",
+									"});"
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Validate Email Format",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"invalidEmail@\",\n  \"password\": \"StrongP@ss123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/account/validate-email",
+							"host": ["{{base_url}}"],
+							"path": ["api", "account", "validate-email"]
+						}
+					},
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Response indicates invalid email format', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.false;",
+									"});"
+								]
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://localhost:5001",
+			"type": "string"
+		}
+	]
+}
